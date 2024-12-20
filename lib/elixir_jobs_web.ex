@@ -16,6 +16,7 @@ defmodule ElixirJobsWeb do
   below. Instead, define any helper function in modules
   and import those modules here.
   """
+  def static_paths, do: ~w(css icons images js favicon.ico robots.txt static)
 
   def controller do
     quote do
@@ -23,6 +24,8 @@ defmodule ElixirJobsWeb do
       import Plug.Conn
       import ElixirJobsWeb.Router.Helpers
       import ElixirJobsWeb.Gettext
+
+      unquote(verified_routes())
 
       def user_logged_in?(conn), do: !is_nil(Map.get(conn.assigns, :current_user))
     end
@@ -80,6 +83,15 @@ defmodule ElixirJobsWeb do
     quote do
       use Phoenix.Channel
       import ElixirJobsWeb.Gettext
+    end
+  end
+
+  def verified_routes do
+    quote do
+      use Phoenix.VerifiedRoutes,
+        endpoint: ElixirJobsWeb.Endpoint,
+        router: ElixirJobsWeb.Router,
+        statics: ElixirJobsWeb.static_paths()
     end
   end
 

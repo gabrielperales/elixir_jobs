@@ -13,7 +13,7 @@ defmodule ElixirJobsWeb.Endpoint do
     at: "/",
     from: :elixir_jobs,
     gzip: false,
-    only: ~w(css fonts images icons js favicon.ico robots.txt manifest.json browserconfig.xml)
+    only: ElixirJobsWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

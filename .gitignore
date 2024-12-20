@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io/api/osx,linux,elixir,erlang,phoenix,windows,sublimetext,visualstudiocode
 
+/config/*.example.exs
+/data/
+
 ### Elixir ###
 /_build
 /cover

@@ -31,7 +31,7 @@ defmodule ElixirJobs.DataCase do
   setup tags do
     :ok = SQLSandbox.checkout(ElixirJobs.Repo)
 
-    unless tags[:async] do
+    if !tags[:async] do
       SQLSandbox.mode(ElixirJobs.Repo, {:shared, self()})
     end
 

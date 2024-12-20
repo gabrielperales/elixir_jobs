@@ -19,13 +19,14 @@ defmodule ElixirJobsWeb.ConnCase do
 
   using do
     quote do
+      # The default endpoint for testing
+      @endpoint ElixirJobsWeb.Endpoint
+
+      use ElixirJobsWeb, :verified_routes
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
       import ElixirJobsWeb.Router.Helpers
-
-      # The default endpoint for testing
-      @endpoint ElixirJobsWeb.Endpoint
 
       import ElixirJobs.Factory
     end
@@ -34,7 +35,7 @@ defmodule ElixirJobsWeb.ConnCase do
   setup tags do
     :ok = SQLSandbox.checkout(ElixirJobs.Repo)
 
-    unless tags[:async] do
+    if !tags[:async] do
       SQLSandbox.mode(ElixirJobs.Repo, {:shared, self()})
     end
 
