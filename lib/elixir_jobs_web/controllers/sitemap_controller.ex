@@ -5,7 +5,8 @@ defmodule ElixirJobsWeb.SitemapController do
 
   @items_per_page Application.compile_env!(:elixir_jobs, :items_per_page)
 
-  def sitemap(conn, _params) do
+  @spec sitemap(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def sitemap(%Plug.Conn{} = conn, _params) do
     offers = Core.list_offers(published: true)
 
     total_pages =

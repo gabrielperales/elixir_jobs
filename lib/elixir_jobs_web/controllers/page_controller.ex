@@ -1,11 +1,13 @@
 defmodule ElixirJobsWeb.PageController do
   use ElixirJobsWeb, :controller
 
-  def about(conn, _params) do
+  @spec about(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def about(%Plug.Conn{} = conn, _params) do
     render(conn, "about.html")
   end
 
-  def sponsors(conn, _params) do
+  @spec sponsors(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def sponsors(%Plug.Conn{} = conn, _params) do
     render(conn, "sponsors.html")
   end
 end

@@ -10,7 +10,6 @@ defmodule ElixirJobsWeb.DateHelper do
     case Calendar.DateTime.diff(date1, date2) do
       {:ok, seconds, _, :before} -> -1 * seconds
       {:ok, seconds, _, _} -> seconds
-      _ -> nil
     end
   end
 

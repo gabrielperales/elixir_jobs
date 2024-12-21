@@ -1,4 +1,5 @@
 defmodule ElixirJobsWeb.EmailsTest do
+  @moduledoc false
   use ElixirJobsWeb.ConnCase
   use Bamboo.Test, shared: true
 

@@ -46,7 +46,8 @@ defmodule ElixirJobsWeb.MicrodataHelper do
     site_microdata ++ organization_microdata ++ offer_microdata
   end
 
-  defp offer_microdata(conn, offer) do
+  @spec offer_microdata(Plug.Conn.t(), Offer.t()) :: map()
+  defp offer_microdata(%Plug.Conn{} = conn, %Offer{} = offer) do
     publication_date = offer.published_at || offer.inserted_at
     publication_date_str = DateHelper.strftime(publication_date, "%Y-%m-%d")
 
@@ -92,7 +93,8 @@ defmodule ElixirJobsWeb.MicrodataHelper do
     end
   end
 
-  defp organization_microdata(conn) do
+  @spec organization_microdata(Plug.Conn.t()) :: map()
+  defp organization_microdata(%Plug.Conn{} = conn) do
     %{
       "url" => ElixirJobsWeb.Endpoint.url() <> "/",
       "sameAs" => ["https://twitter.com/jobs_elixir"],

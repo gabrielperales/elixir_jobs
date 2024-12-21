@@ -21,6 +21,7 @@ defmodule ElixirJobs.Accounts.Schemas.Admin do
   end
 
   @doc false
+  @spec changeset(Ecto.Schema.t(), map()) :: Ecto.Changeset.t()
   def changeset(admin, attrs) do
     admin
     |> cast(attrs, [:name, :email, :password, :password_confirmation])
@@ -33,16 +34,20 @@ defmodule ElixirJobs.Accounts.Schemas.Admin do
   @doc """
   Function to check the `password` of a given `admin`.
   """
+  @spec check_password(Ecto.Schema.t(), String.t()) ::
+          {:ok, Ecto.Schema.t()} | {:error, :wrong_credentials}
   def check_password(admin, password) do
-    case Bcrypt.verify_pass(password, admin.encrypted_password) do
-      true -> {:ok, admin}
-      _ -> {:error, :wrong_credentials}
+    if Bcrypt.verify_pass(password, admin.encrypted_password) do
+      {:ok, admin}
+    else
+      {:error, :wrong_credentials}
     end
   end
 
   @doc """
   Function to simulate checking a password to avoid time-based user discovery
   """
+  @spec dummy_check_password() :: {:error, :wrong_credentials}
   def dummy_check_password do
     Bcrypt.no_user_verify()
     {:error, :wrong_credentials}
@@ -50,6 +55,7 @@ defmodule ElixirJobs.Accounts.Schemas.Admin do
 
   # Function to validate passwords only if they are changed or the admin is new.
   #
+  @spec validate_passwords(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   defp validate_passwords(changeset) do
     current_password_hash = get_field(changeset, :encrypted_password)
     new_password = get_change(changeset, :password)
@@ -72,6 +78,7 @@ defmodule ElixirJobs.Accounts.Schemas.Admin do
   # Function to generate password hash when creating/changing the password of an
   # admin account
   #
+  @spec generate_passwords(Ecto.Changeset.t()) :: Ecto.Changeset.t()
   defp generate_passwords(%Ecto.Changeset{errors: []} = changeset) do
     case get_field(changeset, :password) do
       password when password not in ["", nil] ->

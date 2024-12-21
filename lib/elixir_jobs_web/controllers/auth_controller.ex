@@ -6,11 +6,13 @@ defmodule ElixirJobsWeb.AuthController do
 
   plug :scrub_params, "auth" when action in [:create]
 
-  def new(conn, _params) do
+  @spec new(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def new(%Plug.Conn{} = conn, _params) do
     render(conn, "new.html")
   end
 
-  def create(conn, %{"auth" => auth_params}) do
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def create(%Plug.Conn{} = conn, %{"auth" => auth_params}) do
     with {:ok, email} <- Map.fetch(auth_params, "email"),
          {:ok, password} <- Map.fetch(auth_params, "password"),
          {:ok, admin} <- Accounts.authenticate_admin(email, password) do
@@ -26,14 +28,15 @@ defmodule ElixirJobsWeb.AuthController do
     end
   end
 
-  def delete(conn, _params) do
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def delete(%Plug.Conn{} = conn, _params) do
     conn
     |> Guardian.Plug.sign_out()
     |> put_flash(:info, gettext("Successfully logged out! See you!"))
     |> redirect(to: auth_path(conn, :new))
   end
 
-  def auth_error(conn, {_type, _reason}, _opts) do
+  def auth_error(%Plug.Conn{} = conn, {_type, _reason}, _opts) do
     conn
     |> Guardian.Plug.sign_out()
     |> put_flash(:error, gettext("Authentication required"))

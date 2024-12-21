@@ -7,10 +7,10 @@ defmodule ElixirJobsWeb.Admin.OfferController do
 
   plug :scrub_params, "offer" when action in [:update]
 
-  def index_published(conn, params) do
+  @spec index_published(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def index_published(%Plug.Conn{} = conn, params) when is_map(params) do
     page_number =
-      with {:ok, page_no} <- Map.fetch(params, "page"),
-           true <- is_binary(page_no),
+      with {:ok, page_no} when is_binary(page_no) <- Map.fetch(params, "page"),
            {value, _} <- Integer.parse(page_no) do
         value
       else
@@ -26,10 +26,9 @@ defmodule ElixirJobsWeb.Admin.OfferController do
     |> render("index_published.html")
   end
 
-  def index_unpublished(conn, params) do
+  def index_unpublished(%Plug.Conn{} = conn, params) when is_map(params) do
     page_number =
-      with {:ok, page_no} <- Map.fetch(params, "page"),
-           true <- is_binary(page_no),
+      with {:ok, page_no} when is_binary(page_no) <- Map.fetch(params, "page"),
            {value, _} <- Integer.parse(page_no) do
         value
       else
@@ -45,7 +44,8 @@ defmodule ElixirJobsWeb.Admin.OfferController do
     |> render("index_unpublished.html")
   end
 
-  def publish(conn, %{"slug" => slug}) do
+  @spec publish(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def publish(%Plug.Conn{} = conn, %{"slug" => slug}) when is_binary(slug) do
     slug
     |> Core.get_offer_by_slug!()
     |> Core.publish_offer()
@@ -62,7 +62,8 @@ defmodule ElixirJobsWeb.Admin.OfferController do
     end
   end
 
-  def send_twitter(conn, %{"slug" => slug}) do
+  @spec send_twitter(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def send_twitter(%Plug.Conn{} = conn, %{"slug" => slug}) when is_binary(slug) do
     offer = Core.get_offer_by_slug!(slug)
 
     Twitter.publish(conn, offer)
@@ -72,7 +73,8 @@ defmodule ElixirJobsWeb.Admin.OfferController do
     |> redirect(to: offer_path(conn, :show, slug))
   end
 
-  def send_telegram(conn, %{"slug" => slug}) do
+  @spec send_telegram(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def send_telegram(%Plug.Conn{} = conn, %{"slug" => slug}) when is_binary(slug) do
     offer = Core.get_offer_by_slug!(slug)
 
     case Telegram.send(conn, offer) do
@@ -86,14 +88,17 @@ defmodule ElixirJobsWeb.Admin.OfferController do
     end
   end
 
-  def edit(conn, %{"slug" => slug}) do
+  @spec edit(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def edit(%Plug.Conn{} = conn, %{"slug" => slug}) when is_binary(slug) do
     offer = Core.get_offer_by_slug!(slug)
     offer_changeset = Core.change_offer(offer)
 
     render(conn, "edit.html", changeset: offer_changeset, offer: offer)
   end
 
-  def update(conn, %{"slug" => slug, "offer" => offer_params}) do
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def update(%Plug.Conn{} = conn, %{"slug" => slug, "offer" => offer_params})
+      when is_binary(slug) and is_map(offer_params) do
     offer = Core.get_offer_by_slug!(slug)
 
     case Core.update_offer(offer, offer_params) do
@@ -107,7 +112,8 @@ defmodule ElixirJobsWeb.Admin.OfferController do
     end
   end
 
-  def delete(conn, %{"slug" => slug}) do
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def delete(%Plug.Conn{} = conn, %{"slug" => slug}) when is_binary(slug) do
     slug
     |> Core.get_offer_by_slug!()
     |> Core.delete_offer()

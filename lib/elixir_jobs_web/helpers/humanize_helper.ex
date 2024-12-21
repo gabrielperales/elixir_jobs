@@ -15,7 +15,9 @@ defmodule ElixirJobsWeb.HumanizeHelper do
   def human_get_type(option, default), do: get_type_text(option, default)
 
   @doc "Returns a date formatted for humans."
-  def readable_date(date, use_abbrevs? \\ true) do
+  @spec readable_date(DateTime.t()) :: String.t()
+  @spec readable_date(DateTime.t(), boolean()) :: String.t()
+  def readable_date(%DateTime{} = date, use_abbrevs? \\ true) do
     if use_abbrevs? && this_year?(date) do
       cond do
         today?(date) ->
@@ -46,14 +48,17 @@ defmodule ElixirJobsWeb.HumanizeHelper do
   # Private functions
   ###
 
-  defp this_year?(date), do: date.year == DateTime.utc_now().year
+  @spec this_year?(DateTime.t()) :: boolean()
+  defp this_year?(%DateTime{} = date), do: date.year == DateTime.utc_now().year
 
-  defp today?(date) do
+  @spec today?(DateTime.t()) :: boolean()
+  defp today?(%DateTime{} = date) do
     now = DateTime.utc_now()
     date.day == now.day && date.month == now.month && date.year == now.year
   end
 
-  def yesterday?(date) do
+  @spec yesterday?(DateTime.t()) :: boolean()
+  defp yesterday?(%DateTime{} = date) do
     now = DateTime.utc_now()
     difference = DateTime.diff(now, date)
     difference < 2 * 24 * 60 * 60 && difference > 1 * 24 * 60 * 60

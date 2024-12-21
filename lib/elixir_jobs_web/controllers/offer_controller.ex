@@ -9,7 +9,8 @@ defmodule ElixirJobsWeb.OfferController do
 
   plug :scrub_params, "offer" when action in [:create, :preview]
 
-  def index(conn, params) do
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def index(%Plug.Conn{} = conn, params) do
     page_number = get_page_number(params)
 
     page = Core.list_offers(published: true, page: page_number)
@@ -22,7 +23,8 @@ defmodule ElixirJobsWeb.OfferController do
     |> render("index.html")
   end
 
-  def index_filtered(conn, %{"filter" => filter}) when filter in @type_filters do
+  @spec index_filtered(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def index_filtered(%Plug.Conn{} = conn, %{"filter" => filter}) when filter in @type_filters do
     updated_params = %{"filters" => %{"job_type" => filter}}
 
     updated_conn =
@@ -33,7 +35,8 @@ defmodule ElixirJobsWeb.OfferController do
     search(updated_conn, updated_params)
   end
 
-  def index_filtered(conn, %{"filter" => filter}) when filter in @place_filters do
+  @spec index_filtered(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def index_filtered(%Plug.Conn{} = conn, %{"filter" => filter}) when filter in @place_filters do
     updated_params = %{"filters" => %{"job_place" => filter}}
 
     updated_conn =
@@ -44,11 +47,13 @@ defmodule ElixirJobsWeb.OfferController do
     search(updated_conn, updated_params)
   end
 
-  def index_filtered(conn, _params) do
+  @spec index_filtered(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def index_filtered(%Plug.Conn{} = conn, _params) do
     raise Phoenix.Router.NoRouteError, conn: conn, router: ElixirJobsWeb.Router
   end
 
-  def search(conn, params) do
+  @spec search(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def search(%Plug.Conn{} = conn, params) do
     page_number = get_page_number(params)
 
     opts =
@@ -80,13 +85,15 @@ defmodule ElixirJobsWeb.OfferController do
     |> render("index.html")
   end
 
-  def new(conn, _params) do
+  @spec new(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def new(%Plug.Conn{} = conn, _params) do
     changeset = Core.change_offer(%Offer{})
 
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"offer" => offer_params}) do
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def create(%Plug.Conn{} = conn, %{"offer" => offer_params}) do
     # Line breaks sent by the browser are received as two bytes, while Ecto
     # changeset counts only one, causing issues with limited fields.
     # This snippet solves that.
@@ -115,7 +122,8 @@ defmodule ElixirJobsWeb.OfferController do
     end
   end
 
-  def preview(conn, %{"offer" => offer_params}) do
+  @spec preview(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def preview(%Plug.Conn{} = conn, %{"offer" => offer_params}) do
     job_place =
       offer_params
       |> Map.get("job_place")
@@ -145,7 +153,8 @@ defmodule ElixirJobsWeb.OfferController do
     |> render("preview.html", offer: offer_preview)
   end
 
-  def show(conn, %{"slug" => slug}) do
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def show(%Plug.Conn{} = conn, %{"slug" => slug}) do
     offer =
       if user_logged_in?(conn) do
         Core.get_offer_by_slug!(slug)
@@ -156,14 +165,15 @@ defmodule ElixirJobsWeb.OfferController do
     render(conn, "show.html", offer: offer)
   end
 
-  def rss(conn, _params) do
+  @spec rss(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def rss(%Plug.Conn{} = conn, _params) do
     offers = Core.list_offers(published: true, page: 1)
     render(conn, "rss.xml", offers: offers.entries)
   end
 
+  @spec get_page_number(map()) :: non_neg_integer()
   defp get_page_number(params) do
-    with {:ok, page_no} <- Map.fetch(params, "page"),
-         true <- is_binary(page_no),
+    with {:ok, page_no} when is_binary(page_no) <- Map.fetch(params, "page"),
          {value, _} <- Integer.parse(page_no) do
       value
     else

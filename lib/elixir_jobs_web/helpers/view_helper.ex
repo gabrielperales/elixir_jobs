@@ -19,6 +19,7 @@ defmodule ElixirJobsWeb.ViewHelper do
     |> Enum.member?(field)
   end
 
+  @spec do_strip_tags(String.t()) :: {:safe, String.t()}
   def do_strip_tags(text) do
     text
     |> HtmlSanitizeEx.strip_tags()
@@ -29,13 +30,15 @@ defmodule ElixirJobsWeb.ViewHelper do
   # XML related functions
   ###
 
+  @spec xml_strip_tags(String.t()) :: String.t()
   def xml_strip_tags(text) do
     {:safe, text} = do_strip_tags(text)
     text
   end
 
   @doc "Returns a date formatted for RSS clients."
-  def xml_readable_date(date) do
+  @spec xml_readable_date(DateTime.t()) :: String.t()
+  def xml_readable_date(%DateTime{} = date) do
     DateHelper.strftime(date, "%e %b %Y %T %z")
   end
 end

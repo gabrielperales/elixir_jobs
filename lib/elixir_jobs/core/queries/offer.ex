@@ -5,6 +5,7 @@ defmodule ElixirJobs.Core.Queries.Offer do
 
   import Ecto.Query, warn: false
 
+  @spec build(Ecto.Query.t(), Keyword.t()) :: Ecto.Query.t()
   def build(query, opts) do
     Enum.reduce(opts, query, fn
       {:published, true}, q ->
@@ -29,14 +30,17 @@ defmodule ElixirJobs.Core.Queries.Offer do
     end)
   end
 
+  @spec by_id(Ecto.Query.t(), String.t()) :: Ecto.Query.t()
   def by_id(query, id) do
     from o in query, where: o.id == ^id
   end
 
+  @spec by_slug(Ecto.Query.t(), String.t()) :: Ecto.Query.t()
   def by_slug(query, slug) do
     from o in query, where: o.slug == ^slug
   end
 
+  @spec by_job_type(Ecto.Query.t(), String.t() | [String.t()]) :: Ecto.Query.t()
   def by_job_type(query, values) when is_list(values) do
     from o in query, where: o.job_type in ^values
   end
@@ -45,14 +49,17 @@ defmodule ElixirJobs.Core.Queries.Offer do
     from o in query, where: o.job_type == ^value
   end
 
+  @spec by_job_place(Ecto.Query.t(), String.t() | [String.t()]) :: Ecto.Query.t()
   def by_job_place(query, values) when is_list(values) do
     from o in query, where: o.job_place in ^values
   end
 
+  @spec by_job_place(Ecto.Query.t(), String.t()) :: Ecto.Query.t()
   def by_job_place(query, value) do
     from o in query, where: o.job_place == ^value
   end
 
+  @spec by_text(Ecto.Query.t(), String.t()) :: Ecto.Query.t()
   def by_text(query, text) when is_binary(text) do
     text
     |> String.split(" ")
@@ -65,15 +72,18 @@ defmodule ElixirJobs.Core.Queries.Offer do
     end)
   end
 
+  @spec published(Ecto.Query.t()) :: Ecto.Query.t()
   def published(query) do
     from o in query,
       where: not is_nil(o.published_at) and o.published_at <= ^DateTime.utc_now()
   end
 
+  @spec unpublished(Ecto.Query.t()) :: Ecto.Query.t()
   def unpublished(query) do
     from o in query, where: is_nil(o.published_at)
   end
 
+  @spec order_published(Ecto.Query.t()) :: Ecto.Query.t()
   def order_published(query) do
     from o in query, order_by: [desc: o.published_at]
   end
